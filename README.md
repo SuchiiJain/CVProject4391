@@ -22,11 +22,12 @@ The output is the predicted letter corresponding to the detected gesture, enabli
 
 **Requirements:** Python 3.12, Git, a webcam
 
-**1. Create and activate a virtual environment**
+**1. Create and activate your local virtual environment**
 ```powershell
 python -m venv venv
 venv\Scripts\activate
 ```
+**Never commit the `venv/` folder. It is listed in `.gitignore` and should stay there.**
 
 **2. Upgrade pip**
 ```powershell
@@ -35,7 +36,7 @@ python -m pip install --upgrade pip
 
 **3. Install dependencies**
 ```powershell
-pip install mediapipe opencv-contrib-python numpy
+pip install -r requirements.txt
 ```
 Only install `opencv-contrib-python` — do NOT also install `opencv-python` as they conflict.
 
