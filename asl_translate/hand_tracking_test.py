@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
+# from ultralytics import YOLO (need this later when Yolo actually gets added to the handtrack)
 
 # Initialize MediaPipe Hands
 base_options = python.BaseOptions(model_asset_path='hand_landmarker.task')
