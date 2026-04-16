@@ -7,6 +7,10 @@ pip install http://jetson.webredirect.org/jp6/cu126/+f/5f9/67f920de3953f/torchvi
 We need no dependencies from the ultralytics
 pip install --no-deps ultralytics>=8.4.0
 
-https://github.com/PINTO0309/mediapipe-bin
-Numpy version - 3.6.9	(mandatory)
-Python version - 1.19.4
+Buns-
+# https://github.com/PINTO0309/mediapipe-bin
+# Numpy version - 3.6.9	(mandatory)
+# Python version - 1.19.4
+
+Not Buns but complicated - 
+https://github.com/dusty-nv/jetson-containers
