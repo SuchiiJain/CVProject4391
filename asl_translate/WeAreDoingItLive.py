@@ -12,7 +12,7 @@ from ASL_Model import ASLSequenceInterpreter # Import your brain architecture
 
 # --- CONFIGURATION ---
 # These MUST match exactly what you used in your training script!
-actions = ['A', 'B', 'C'] 
+actions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 sequence_length = 16
 
 # --- 1. LOAD THE AI MODELS ---
