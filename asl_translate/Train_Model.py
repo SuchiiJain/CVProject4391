@@ -1,5 +1,6 @@
-#ANOTHER AI BOILERPLATE FOR THE TRAINING DATA!!! NEEDS SPECIFIC WORK!!!
+# ANOTHER AI BOILERPLATE FOR THE TRAINING DATA!!! NEEDS SPECIFIC WORK!!!
 # Gemini Pro my beloved
+# python3 Train_Model.py to run
 
 import os
 import numpy as np
