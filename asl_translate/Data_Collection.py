@@ -6,6 +6,7 @@ from ultralytics import YOLO
 import numpy as np
 import os
 import time
+import sys
 
 # ---CONFIG---
 # Change this for every letter
@@ -101,27 +102,44 @@ for sequence in range(start_sequence, end_sequence): #New videos per user that g
         # Append the 63 coordinates to our current video sequence
         window.append(keypoints)
 
-        # User's Cues
+      # User Cues
+        # Draw a background bar for the status text
+        cv2.rectangle(frame, (0, 0), (frame_w, 40), (0, 0, 0), -1)
+        
+        status_text = f"Action: {action} | Video: {sequence} | ESC to Quit"
+        cv2.putText(frame, status_text, (10, 25), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA)
+
         if frame_num == 0: 
-            cv2.putText(frame, 'GET READY...', (120, 200), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255, 0), 4, cv2.LINE_AA)
-            cv2.putText(frame, f'Collecting frames for {action} Video Number {sequence}', (15, 30), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2, cv2.LINE_AA)
+            # 2. THE RESPONSIVE PAUSE
+            # Instead of one big 2-second wait, we check for ESC 20 times.
+            cv2.putText(frame, f'GET READY FOR {action}...', (120, 200), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
             cv2.imshow('Data Collection', frame)
-            cv2.waitKey(2000) # 2 second pause between videos to reset hand
+            
+            for _ in range(20): # 20 iterations * 100ms = 2 seconds
+                if cv2.waitKey(100) & 0xFF == 27: 
+                    print("Exiting during countdown...")
+                    cap.release()
+                    cv2.destroyAllWindows()
+                    sys.exit() # Kills the script immediately
         else: 
-            cv2.putText(frame, f'Collecting frames for {action} Video Number {sequence}', (15, 30), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2, cv2.LINE_AA)
+            # 3. NORMAL CAPTURE
             cv2.imshow('Data Collection', frame)
-            cv2.waitKey(10) # 10ms wait for a smooth 16-frame capture
+            # Check for ESC during every single frame capture
+            if cv2.waitKey(10) & 0xFF == 27:
+                print("Exiting during capture...")
+                cap.release()
+                cv2.destroyAllWindows()
+                sys.exit()
             
     # Saves to file location
     # Once the loop hits 16 frames, save the 2D array as a .npy file (apparently .npy files are better than our original .csv)
     npy_path = os.path.join(DATA_PATH, action, str(sequence))
     np.save(npy_path, np.array(window))
 
-    if cv2.waitKey(1) & 0xFF == 27:
-        break
+    
 
 cap.release()
 cv2.destroyAllWindows()
+sys.exit()
