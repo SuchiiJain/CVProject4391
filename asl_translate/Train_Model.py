@@ -13,7 +13,7 @@ from ASL_Model import ASLSequenceInterpreter # Imports your model architecture
 # --- CONFIGURATION ---
 DATA_PATH = os.path.join('ASL_Dataset')
 # List the exact letters your team recorded. Order matters!
-actions = np.array(['A', 'B', 'C']) 
+actions = np.array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']) 
 sequence_length = 16
 
 # --- 1. PREPPING THE DATA ---
@@ -73,6 +73,8 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 # --- 3. THE TRAINING LOOP ---
 epochs = 50 # How many times the AI will review the entire dataset
 
+best_loss = float('inf')
+
 print("Starting training...")
 for epoch in range(epochs):
     model.train() # Put model in training mode
@@ -99,6 +101,23 @@ for epoch in range(epochs):
         optimizer.step()
         
         total_loss += loss.item()
+
+    # --- NEW: VALIDATION CHECK ---
+    model.eval() # Put model in testing mode
+    val_loss = 0
+    with torch.no_grad(): # Don't tweak math during testing
+        for val_seq, val_labels in test_loader:
+            val_seq, val_labels = val_seq.to(device), val_labels.to(device)
+            val_predictions = model(val_seq)
+            val_loss += criterion(val_predictions, val_labels).item()
+            
+    avg_val_loss = val_loss / len(test_loader)
+    
+    # If this is the best score yet, save the file!
+    if avg_val_loss < best_loss:
+        best_loss = avg_val_loss
+        torch.save(model.state_dict(), 'best_asl_model.pth')
+        print(f"Epoch {epoch+1}: New best model saved! Loss: {avg_val_loss:.4f}")
         
     # Print progress every 10 epochs
     if (epoch + 1) % 10 == 0:
