@@ -1,5 +1,7 @@
 Create a new Python Enviroment (Venv) to protect the Egg
 
+This is stream of consciousness; Only look towards the bottom
+
 .whl needed for jetpack 6 (apparently some things can't run on our archectecture (ARM/Linux)
 pip install http://jetson.webredirect.org/jp6/cu126/+f/5cf/9ed17e35cb752/torch-2.5.0-cp310-cp310-linux_aarch64.whl
 pip install http://jetson.webredirect.org/jp6/cu126/+f/5f9/67f920de3953f/torchvision-0.20.0-cp310-cp310-linux_aarch64.whl
