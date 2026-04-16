@@ -14,3 +14,21 @@ Buns-
 
 Not Buns but complicated - 
 https://github.com/dusty-nv/jetson-containers
+1) 14t-pytorch image
+2) run installs
+  a) pip install --no-deps ultralytics>=8.4.0
+  b) pip install mediapipe==0.10.18
+3) Get the LSTM running going
+
+Steps to run Data_collection
+1) xhost +
+2) git clone https://github.com/SuchiiJain/CVProject4391.git
+3) cd CVProject4391/asl_translatecd jetson-containers
+4) git clone https://github.com/dusty-nv/jetson-containers
+5) cd jetson-containers
+6) bash install.sh
+7) cd ..
+8) jetson-containers run $(autotag pytorch)
+9) pip install --no-deps ultralytics>=8.4.0
+10) pip install mediapipe==0.10.18
+11) python3 Data_Collection.py
