@@ -20,10 +20,10 @@ https://github.com/dusty-nv/jetson-containers
   b) pip install mediapipe==0.10.18
 3) Get the LSTM running going
 
-Steps to run Data_collection
+Steps to run Data_collection (FOR THE NANO)
 1) xhost +
 2) git clone https://github.com/SuchiiJain/CVProject4391.git
-3) cd CVProject4391/asl_translatecd jetson-containers
+3) cd CVProject4391/asl_translate
 4) git clone https://github.com/dusty-nv/jetson-containers
 5) cd jetson-containers
 6) bash install.sh
