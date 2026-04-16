@@ -44,15 +44,16 @@ class ASLSequenceInterpreter(nn.Module):
         return out
 
 # --- TESTING THE ARCHITECTURE ---
-if __name__ == "__main__":
+##if __name__ == "__main__":
     # Let's pretend we pass in 1 video (batch=1), with 16 frames, and 63 data points per frame
-    dummy_video_data = torch.randn(1, 16, 63) 
+##    dummy_video_data = torch.randn(1, 16, 63) 
     
     # Initialize the model (let's say we are trying to guess between 3 letters: A, B, C)
-    model = ASLSequenceInterpreter(num_classes=3)
+##    model = ASLSequenceInterpreter(num_classes=3)
     
     # Run the dummy video through the model
-    prediction = model(dummy_video_data)
+##    prediction = model(dummy_video_data)
     
-    print("Model initialized successfully!")
-    print(f"Output shape: {prediction.shape} (Batch Size, Number of Classes)")
+##    print("Model initialized successfully!")
+##    print(f"Output shape: {prediction.shape} (Batch Size, Number of Classes)")
+    
