@@ -47,6 +47,16 @@ detector = vision.HandLandmarker.create_from_options(options)
 
 cap = cv2.VideoCapture(0)
 
+# Helper designed to exit safely without errors 
+def cleanup():
+    try:
+        detector.close()
+    except Exception:
+        pass
+    cap.release()
+    cv2.destroyAllWindows()
+    
+
 # Loop through video amount
 for sequence in range(start_sequence, end_sequence): #New videos per user that go to the same location
     # Loop through frames (16 frames per video)
@@ -120,8 +130,7 @@ for sequence in range(start_sequence, end_sequence): #New videos per user that g
             for _ in range(20): # 20 iterations * 100ms = 2 seconds
                 if cv2.waitKey(100) & 0xFF == 27: 
                     print("Exiting during countdown...")
-                    cap.release()
-                    cv2.destroyAllWindows()
+                    cleanup()
                     sys.exit() # Kills the script immediately
         else: 
             # 3. NORMAL CAPTURE
@@ -129,8 +138,7 @@ for sequence in range(start_sequence, end_sequence): #New videos per user that g
             # Check for ESC during every single frame capture
             if cv2.waitKey(10) & 0xFF == 27:
                 print("Exiting during capture...")
-                cap.release()
-                cv2.destroyAllWindows()
+                cleanup()
                 sys.exit()
             
     # Saves to file location
@@ -138,8 +146,4 @@ for sequence in range(start_sequence, end_sequence): #New videos per user that g
     npy_path = os.path.join(DATA_PATH, action, str(sequence))
     np.save(npy_path, np.array(window))
 
-    
-
-cap.release()
-cv2.destroyAllWindows()
-sys.exit()
+cleanup()
