@@ -18,7 +18,7 @@ sequence_length = 16
 print("Team Members: 1=Suchi_Jain, 2=Lauren_Anderson, 3=Victor_Runyan, 4=Nickolas_Ackley")
 user_id = int(input("Enter your User Number (1-4): "))
 
-# The same user will change their specific video
+# The same user will only change their specific set of videos (no overriding other user's videos
 start_sequence = (user_id - 1) * num_sequences
 end_sequence = user_id * num_sequences
 
