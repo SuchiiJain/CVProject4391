@@ -11,9 +11,18 @@ import time
 # Change this for every letter
 action = 'A' 
 # Videos of letter in folder (Don't Change this, for simplicities sake)
-no_sequences = 30 
+num_sequences = 30 
 # How many frames per video (Don't Change this, due to how LSTM's Work)
 sequence_length = 16 
+
+print("Team Members: 1=Suchi_Jain, 2=Lauren_Anderson, 3=Victor_Runyan, 4=Nickolas_Ackley")
+user_id = int(input("Enter your User Number (1-4): "))
+
+# The same user will change their specific video
+start_sequence = (user_id - 1) * num_sequences
+end_sequence = user_id * num_sequences
+
+print(f"\n User {user_id} is recording videos {start_sequence} through {end_sequence - 1} for the letter {action}.")
 
 # Folder location
 DATA_PATH = os.path.join('ASL_Dataset')
@@ -38,7 +47,7 @@ detector = vision.HandLandmarker.create_from_options(options)
 cap = cv2.VideoCapture(0)
 
 # Loop through video amount
-for sequence in range(no_sequences):
+for sequence in range(start_sequence, end_sequence): #New videos per user that go to the same location
     # Loop through frames (16 frames per video)
     window = [] # This will hold the 16 arrays of 63 ((x,y,z) * 16 frames) coordinates
     
