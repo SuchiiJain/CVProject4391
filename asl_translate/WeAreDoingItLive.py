@@ -9,11 +9,12 @@ from ultralytics import YOLO
 import numpy as np
 import torch
 from ASL_Model import ASLSequenceInterpreter # Import your brain architecture
+from frame_buffer import FrameBuffer # Import the helper for series of frames
 
 # --- CONFIGURATION ---
 # These MUST match exactly what you used in your training script!
 actions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-sequence_length = 16
+buffer = FrameBuffer(series_length=16) # This will hold our rolling window of frames
 
 # --- 1. LOAD THE AI MODELS ---
 print("Loading YOLO...")
@@ -40,7 +41,6 @@ model.load_state_dict(torch.load('best_asl_model.pth', map_location=device))
 model.eval() # CRITICAL: Puts the model in "prediction" mode, not training mode
 
 # --- 2. LIVE VARIABLES ---
-sequence = [] # This is your rolling window
 current_prediction = "Waiting for data..."
 
 # Turn on the webcam!
@@ -93,38 +93,24 @@ while cap.isOpened():
                 keypoints = np.array(extracted_points)
 
     # --- THE FALLBACK REDUNDANCY ---
-    # If the AI couldn't find a hand in this exact frame, handle it safely
+    # No hand detected -- buffer waits
     if keypoints is None:
-        if len(sequence) > 0:
-            # If we already have some data, just copy the previous frame's data 
-            # to prevent the LSTM from experiencing a violent "jump" to zeros
-            keypoints = sequence[-1] 
-        else:
-            # If it's the very first frame and nothing is there, use zeros
-            keypoints = np.zeros(21 * 3)
+        buffer.pause()
+    else:
+        buffer.add_frame(keypoints)
 
-    # Append to our rolling window
-    sequence.append(keypoints)
-    
-    # Keep the window at exactly 16 frames by popping the oldest one off the front
-    sequence = sequence[-16:]
 
     # --- 3. MAKE A PREDICTION ---
     # Only try to guess if we have a full 16 frames in the memory bank
-    if len(sequence) == 16:
-        # Convert our list of numpy arrays into a PyTorch Tensor
-        # Add a dimension at the front because the model expects (Batch, Sequence, Features)
-        input_data = torch.tensor(np.array(sequence), dtype=torch.float32).unsqueeze(0).to(device)
+    if buffer.is_full_series():
+        series_input = torch.tensor(buffer.get_series(), dtype=torch.float32).unsqueeze(0).to(device)
         
-        # Don't track gradients (saves memory and speed during live inference)
-        with torch.no_grad(): 
-            res = model(input_data)
-            
-            # Find the index of the highest probability
-            predicted_index = torch.argmax(res).item()
-            
-            # Map that index back to the actual letter (e.g., 0 -> 'A')
+        with torch.no_grad():
+            output = model(series_input)
+            predicted_index = torch.argmax(output).item()
             current_prediction = actions[predicted_index]
+    else:
+        current_prediction = "Collecting data..."
 
     # --- 4. DISPLAY THE RESULT ---
     # Draw a black box behind the text so it's easy to read
