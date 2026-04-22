@@ -4,4 +4,5 @@ Step 2) cd CVProject4391/asl_translate
 Step 3) pip install opencv-python mediapipe ultralytics numpy
 Step 4) Ensure the hand_landmarker.task file is sitting inside the asl_translate folder
 Step 5) run python Data_Collection.py
+step 6) run Data_Correction.py
 Do this for every letter and zip it up and upload it to the Elearning File exchange with your name and upload all the videos in a big zip (if it works) or the whole 30 videos of one letter.
