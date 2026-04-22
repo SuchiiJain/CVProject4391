@@ -7,6 +7,7 @@ import numpy as np
 import os
 import time
 import sys
+from frame_buffer import FrameBuffer # Import the helper for series of frames
 
 # ---CONFIG---
 # Change this for every letter
@@ -60,7 +61,7 @@ def cleanup():
 # Loop through video amount
 for sequence in range(start_sequence, end_sequence): #New videos per user that go to the same location
     # Loop through frames (16 frames per video)
-    window = [] # This will hold the 16 arrays of 63 ((x,y,z) * 16 frames) coordinates
+    window = FrameBuffer(series_length=sequence_length) # Create a new buffer for each video sequence
     
     for frame_num in range(sequence_length):
         success, frame = cap.read()
@@ -109,8 +110,8 @@ for sequence in range(start_sequence, end_sequence): #New videos per user that g
                         
                     keypoints = np.array(extracted_points)
 
-        # Append the 63 coordinates to our current video sequence
-        window.append(keypoints)
+       
+        window.add_frame(keypoints)
 
       # User Cues
         # Draw a background bar for the status text
@@ -144,6 +145,6 @@ for sequence in range(start_sequence, end_sequence): #New videos per user that g
     # Saves to file location
     # Once the loop hits 16 frames, save the 2D array as a .npy file (apparently .npy files are better than our original .csv)
     npy_path = os.path.join(DATA_PATH, action, str(sequence))
-    np.save(npy_path, np.array(window))
+    np.save(npy_path, window.get_series())
 
 cleanup()
