@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 
 class ASLSequenceInterpreter(nn.Module):
-    def __init__(self, input_size=63, hidden_size=128, num_layers=2, num_classes=26):
+    def __init__(self, input_size=63, hidden_size=64, num_layers=2, num_classes=3):
         super(ASLSequenceInterpreter, self).__init__()
         
         # --- THE MEMORY LAYER (LSTM) ---
@@ -16,9 +16,9 @@ class ASLSequenceInterpreter(nn.Module):
         
         # --- THE DECISION LAYERS (Fully Connected) ---
         # After the LSTM processes the sequence, we squish the data down to make a guess
-        self.fc1 = nn.Linear(hidden_size, 64)
+        self.fc1 = nn.Linear(hidden_size, 32)
         self.relu = nn.ReLU() # Activation function (keeps the math non-linear)
-        self.dropout = nn.Dropout(0.3) # Prevents the AI from just memorizing the data
+        self.dropout = nn.Dropout(0.2) # Prevents the AI from just memorizing the data
         
         # num_classes = how many letters you are training (e.g., 3 for A, B, C)
         self.fc2 = nn.Linear(32, num_classes) 

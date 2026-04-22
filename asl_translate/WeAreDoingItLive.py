@@ -1,3 +1,6 @@
+# Another AI Boilerplate!! NEEDS SPECIFIC WORKS
+# Gemini Pro my Beloved
+
 import cv2
 import mediapipe as mp
 from mediapipe.tasks import python
@@ -7,155 +10,87 @@ import numpy as np
 import torch
 from ASL_Model import ASLSequenceInterpreter # Import your brain architecture
 from frame_buffer import FrameBuffer # Import the helper for series of frames
-import threading #added from bloo
-import time #added from bloo
-import sys #added from bloo
-
 
 # --- CONFIGURATION ---
-# These MUST match exactly what you used in training!
+# These MUST match exactly what you used in your training script!
 actions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 buffer = FrameBuffer(series_length=16) # This will hold our rolling window of frames
 
-# Minimum confidence to display a prediction. Below this shows "..." instead.
-# Raise it if you're getting too many wrong guesses, lower it if it's too quiet.
-CONFIDENCE_THRESHOLD = 0.7
-
-# Only re-run YOLO every N frames. Reuses last box in between for speed.
-YOLO_SKIP_FRAMES = 3
-
-
-# --- THREADED CAMERA READER ---
-# Same pattern as Data_Collection.py — reads frames in background so
-# the main loop never blocks waiting on the camera hardware.
-class CameraReader:
-    def __init__(self, index=0):
-        self.cap = cv2.VideoCapture(index)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        self.frame = None
-        self.lock = threading.Lock()
-        self.running = True
-        self.thread = threading.Thread(target=self._reader, daemon=True)
-        self.thread.start()
-
-    def _reader(self):
-        while self.running:
-            success, frame = self.cap.read()
-            if success:
-                with self.lock:
-                    self.frame = frame
-
-    def read(self):
-        with self.lock:
-            return self.frame.copy() if self.frame is not None else None
-
-    def release(self):
-        self.running = False
-        self.thread.join(timeout=1.0)
-        self.cap.release()
-
-
-def cleanup(cam):
-    """MediaPipe first, then camera, then windows. Order matters."""
-    try:
-        detector.close()
-    except Exception:
-        pass
-    cam.release()
-    cv2.destroyAllWindows()
-
-
-# --- LOAD MODELS ---
+# --- 1. LOAD THE AI MODELS ---
 print("Loading YOLO...")
-yolo_model = YOLO('yolo26n.pt')
+yolo_model = YOLO('yolo26n.pt') 
 
 print("Loading MediaPipe...")
 base_options = python.BaseOptions(model_asset_path='hand_landmarker.task')
 options = vision.HandLandmarkerOptions(
     base_options=base_options,
-    num_hands=1,
+    num_hands=1, 
     min_hand_detection_confidence=0.7,
     min_hand_presence_confidence=0.7,
     min_tracking_confidence=0.7
 )
 detector = vision.HandLandmarker.create_from_options(options)
 
-print("Loading LSTM brain...")
+print("Loading the LSTM Brain...")
+# Force PyTorch to use the Jetson's GPU if available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print(f"  Running on: {device}")
 model = ASLSequenceInterpreter(num_classes=len(actions)).to(device)
-model.load_state_dict(torch.load('best_asl_model.pth', map_location=device))
-model.eval()
 
+# Load the weights you saved during training
+model.load_state_dict(torch.load('best_asl_model.pth', map_location=device))
+model.eval() # CRITICAL: Puts the model in "prediction" mode, not training mode
 
 # --- 2. LIVE VARIABLES ---
 current_prediction = "Waiting for data..."
 
+# Turn on the webcam!
+cap = cv2.VideoCapture(0)
 
-# --- START CAMERA ---
-print("Starting camera...")
-cam = CameraReader(0)
+print("We are doing it live! Press 'Esc' to quit.")
 
-for _ in range(30):  # Wait up to 1.5s for first frame
-    if cam.read() is not None:
+while cap.isOpened():
+    success, frame = cap.read()
+    if not success:
         break
-    time.sleep(0.05)
-
-print("We are doing it live! Press ESC to quit.")
-
-# --- MAIN LOOP ---
-while True:
-    frame = cam.read()
-    if frame is None:
-        continue
-
+        
     frame = cv2.flip(frame, 1)
     frame_h, frame_w, _ = frame.shape
-
-    # --- YOLO: throttled ---
-    if yolo_counter % YOLO_SKIP_FRAMES == 0:
-        yolo_results = yolo_model(frame, verbose=False)
-        boxes = yolo_results[0].boxes
-        if len(boxes) > 0:
-            x1, y1, x2, y2 = map(int, boxes[0].xyxy[0])
-            # 20% padding so the hand isn't clipped at edges
-            bw, bh = x2 - x1, y2 - y1
-            px, py = int(bw * 0.2), int(bh * 0.2)
-            last_box = (
-                max(0, x1 - px), max(0, y1 - py),
-                min(frame_w, x2 + px), min(frame_h, y2 + py)
-            )
-        else:
-            last_box = None
-    yolo_counter += 1
-
-    # --- MEDIAPIPE: every frame using persisted box ---
-    keypoints = np.zeros(21 * 3)
-
-    if last_box is not None:
-        x1, y1, x2, y2 = last_box
+    
+    # 1. Ask YOLO where the hand is
+    yolo_results = yolo_model(frame, verbose=False)
+    boxes = yolo_results[0].boxes
+    
+    keypoints = None # Reset keypoints for this frame
+    
+    # 2. If YOLO finds a hand, ask MediaPipe for the skeleton
+    if len(boxes) > 0:
+        x1, y1, x2, y2 = map(int, boxes[0].xyxy[0])
+        x1, y1 = max(0, x1), max(0, y1)
+        x2, y2 = min(frame_w, x2), min(frame_h, y2)
+        
         cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
-        cropped = frame[y1:y2, x1:x2]
-
-        if cropped.shape[0] > 0 and cropped.shape[1] > 0:
-            crop_h, crop_w, _ = cropped.shape
-            rgb_crop = cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
+        cropped_frame = frame[y1:y2, x1:x2]
+        
+        if cropped_frame.shape[0] > 0 and cropped_frame.shape[1] > 0:
+            crop_h, crop_w, _ = cropped_frame.shape
+            rgb_crop = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2RGB)
             mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_crop)
             mp_results = detector.detect(mp_image)
 
             if mp_results.hand_landmarks:
-                hand_landmarks = mp_results.hand_landmarks[0]
+                hand_landmarks = mp_results.hand_landmarks[0] 
                 extracted_points = []
-
+                
                 for landmark in hand_landmarks:
                     global_x = x1 + int(landmark.x * crop_w)
                     global_y = y1 + int(landmark.y * crop_h)
                     norm_x = global_x / frame_w
                     norm_y = global_y / frame_h
                     extracted_points.extend([norm_x, norm_y, landmark.z])
+                    
                     cv2.circle(frame, (global_x, global_y), 5, (0, 255, 0), -1)
+                    
+                keypoints = np.array(extracted_points)
 
     # --- THE FALLBACK REDUNDANCY ---
     # No hand detected -- buffer waits
@@ -185,9 +120,8 @@ while True:
 
     cv2.imshow('ASL Live Translation', frame)
 
-    if cv2.waitKey(1) & 0xFF == 27:
-        print("Exiting...")
+    if cv2.waitKey(10) & 0xFF == 27:
         break
 
-cleanup(cam)
-sys.exit()
+cap.release()
+cv2.destroyAllWindows()
