@@ -79,6 +79,10 @@ for sequence in range(start_sequence, end_sequence): #New videos per user that g
         
         if len(boxes) > 0:
             x1, y1, x2, y2 = map(int, boxes[0].xyxy[0])
+
+            bw, bh = x2 - x1, y2 - y1
+            px, py = int(bw * 0.2), int(bh * 0.2)
+            
             x1, y1 = max(0, x1), max(0, y1)
             x2, y2 = min(frame_w, x2), min(frame_h, y2)
             
