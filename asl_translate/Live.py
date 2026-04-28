@@ -96,6 +96,7 @@ current_prediction = "..."           # What we show on screen
 current_confidence = 0.0             # Softmax confidence of that prediction
 last_box = None                      # Persisted YOLO box
 yolo_counter = 0                     # Frame counter for YOLO throttle
+last_good_keypoints = np.zeros(21 * 3) # Failsafe memory
 
 
 # --- START CAMERA ---
@@ -136,7 +137,7 @@ while True:
     yolo_counter += 1
 
     # --- MEDIAPIPE: every frame using persisted box ---
-    keypoints = np.zeros(21 * 3)
+    keypoints = last_good_keypoints.copy()
 
     if last_box is not None:
         x1, y1, x2, y2 = last_box
@@ -186,6 +187,7 @@ while True:
                     cv2.circle(frame, (global_x, global_y), 5, (0, 255, 0), -1)
                     
                 keypoints = np.array(extracted_points)
+                last_good_keypoints = keypoints # Update the failsafe memory
 
     # --- ROLLING WINDOW ---
     # Always use zeros when no hand found — honest signal to the LSTM
