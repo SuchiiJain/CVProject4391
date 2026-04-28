@@ -13,7 +13,7 @@ from frame_buffer import FrameBuffer # Import the helper for series of frames
 # Change this for every letter
 action = 'A' 
 # Videos of letter in folder (Don't Change this, for simplicities sake)
-num_sequences = 30 
+num_sequences = 45 
 # How many frames per video (Don't Change this, due to how LSTM's Work)
 sequence_length = 16 
 
