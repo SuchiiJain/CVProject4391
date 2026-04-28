@@ -70,7 +70,7 @@ for action in actions:
     if not bad_sequences:
         print("-" * 40)
         print(f"Success! No drops or frozen frames found in the {action} dataset.")
-        sys.exit()
+        continue
     
     bad_sequences.sort()
     print("-" * 40)
