@@ -10,21 +10,20 @@ import sys
 from frame_buffer import FrameBuffer # Import the helper for series of frames
 
 # ---CONFIG---
-# Change this for every letter
-action = 'A' 
 # Videos of letter in folder (Don't Change this, for simplicities sake)
 num_sequences = 45 
 # How many frames per video (Don't Change this, due to how LSTM's Work)
 sequence_length = 16 
 
-print("Team Members: 1=Suchi_Jain, 2=Lauren_Anderson, 3=Victor_Runyan, 4=Nickolas_Ackley")
+print("Team Members: 1=Suchi_Jain, 2=Lauren_Anderson, 3=Bloo, 4=Nickolas_Ackley")
 user_id = int(input("Enter your User Number (1-4): "))
+action = input("Enter the letter you are recording (e.g., A): ").upper()
 
-# The same user will only change their specific set of videos (no overriding other user's videos
+# The same user will only change their specific set of videos (no overriding other user's videos)
 start_sequence = (user_id - 1) * num_sequences
 end_sequence = user_id * num_sequences
 
-print(f"\n User {user_id} is recording videos {start_sequence} through {end_sequence - 1} for the letter {action}.")
+print(f"\nUser {user_id} is recording videos {start_sequence} through {end_sequence - 1} for the letter {action}.")
 
 # Folder location
 DATA_PATH = os.path.join('ASL_Dataset')
