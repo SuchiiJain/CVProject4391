@@ -1,4 +1,3 @@
-#another AI tool to check data
 import numpy as np
 import os
 
@@ -15,7 +14,7 @@ print(f"\n--- Batch Data Report for {DATA_PATH} ---")
 clean_files = []
 corrupted_files = []
 
-# Gather and sort files numerically (so 2.npy comes before 10.npy)
+# Gather and sort files numerically
 files = [f for f in os.listdir(DATA_PATH) if f.endswith(".npy")]
 files.sort(key=lambda x: int(x.replace('.npy', '')))
 
@@ -25,23 +24,34 @@ for filename in files:
     try:
         data = np.load(filepath)
         
-        # Check if the shape is correct before anything else
+        # Check 1: Shape Validation
         if data.shape != (16, 63):
             print(f"[{filename:^8}] ERROR - Wrong shape: {data.shape}")
             corrupted_files.append(filename)
             continue
             
-        # Find frames that are completely empty
         zero_frames = []
+        frozen_frames = []
+        
+        # Check 2: Pure Zeros (Complete failure to track from frame 0)
         for frame_num in range(data.shape[0]):
             if np.all(data[frame_num] == 0):
                 zero_frames.append(frame_num)
+                
+        # Check 3: Frozen Frames (The failsafe triggered mid-recording)
+        for i in range(1, data.shape[0]):
+            if np.array_equal(data[i], data[i-1]):
+                frozen_frames.append(i)
         
-        if not zero_frames:
+        # Grading the file
+        if not zero_frames and not frozen_frames:
             print(f"[{filename:^8}] PASS - 100% Clean")
             clean_files.append(filename)
         else:
-            print(f"[{filename:^8}] FAIL - Empty frames: {zero_frames}")
+            error_msg = []
+            if zero_frames: error_msg.append(f"Zeros at {zero_frames}")
+            if frozen_frames: error_msg.append(f"Frozen at {frozen_frames}")
+            print(f"[{filename:^8}] FAIL - {' | '.join(error_msg)}")
             corrupted_files.append(filename)
             
     except Exception as e:
@@ -58,4 +68,4 @@ print(f"Corrupted Files:     {len(corrupted_files)}")
 if not corrupted_files:
     print("\nStatus: PERFECT. This dataset is cleared for training!")
 else:
-    print("\nStatus: ACTION REQUIRED. Run Data_Correction.py on the failed files.")
+    print("\nStatus: ACTION REQUIRED. Run Data_correctionV2.py on the failed files.")
