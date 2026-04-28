@@ -109,7 +109,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # ReduceLROnPlateau: if val loss stops improving for 5 epochs, cut LR in half.
 # This lets the model take big steps early and fine-tune carefully later.
-scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=5, factor=0.5, verbose=True)
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=5, factor=0.5)
 
 
 # --- 4. TRAINING LOOP ---
