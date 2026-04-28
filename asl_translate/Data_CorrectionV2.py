@@ -34,23 +34,25 @@ for filename in os.listdir(DATA_PATH):
             if np.all(data == 0):
                 seq_num = int(filename.replace('.npy', ''))
                 bad_sequences.append(seq_num)
+                print(f"[{filename}] CRITICAL FAIL: File is completely empty (Pure Zeros).")
                 continue
                 
-            # Check 2: Are there any duplicated consecutive frames? (The Failsafe trigger)
-            failsafe_triggered = False
+            # Check 2: The Tolerance Threshold for Frozen Frames
+            FROZEN_THRESHOLD = 5
+            frozen_count = 0
+            
             for i in range(1, data.shape[0]):
                 # If the current frame is EXACTLY equal to the previous frame
                 if np.array_equal(data[i], data[i-1]):
-                    failsafe_triggered = True
-                    break
+                    frozen_count += 1
                     
-            if failsafe_triggered:
+            if frozen_count >= FROZEN_THRESHOLD:
                 seq_num = int(filename.replace('.npy', ''))
                 bad_sequences.append(seq_num)
+                print(f"[{filename}] FAIL: Too many drops. {frozen_count}/16 frames were frozen.")
                 
         except Exception as e:
             print(f"Error reading {filename}: {e}")
-
 if not bad_sequences:
     print("-" * 40)
     print(f"Success! No drops or frozen frames found in the {action} dataset.")
