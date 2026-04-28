@@ -6,7 +6,7 @@ flatbuffers==25.12.19
 fonttools==4.62.1
 kiwisolver==1.5.0
 matplotlib==3.10.8
-mediapipe==0.10.33
+mediapipe==0.10.5
 numpy==2.4.4
 # This will override the pre-installed openCV on the nano -- opencv-contrib-python==4.13.0.92
 packaging==26.0
