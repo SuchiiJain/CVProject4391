@@ -21,7 +21,7 @@ buffer = FrameBuffer(series_length=16) # This will hold our rolling window of fr
 CONFIDENCE_THRESHOLD = 0.7
 
 # Only re-run YOLO every N frames. Reuses last box in between for speed.
-YOLO_SKIP_FRAMES = 3
+YOLO_SKIP_FRAMES = 8
 sequence_length = 16
 
 
@@ -120,7 +120,7 @@ while True:
 
     # --- YOLO: throttled ---
     if yolo_counter % YOLO_SKIP_FRAMES == 0:
-        yolo_results = yolo_model(frame, verbose=False)
+        yolo_results = yolo_model(frame, imgsz=320, verbose=False)
         boxes = yolo_results[0].boxes
         if len(boxes) > 0:
             x1, y1, x2, y2 = map(int, boxes[0].xyxy[0])
