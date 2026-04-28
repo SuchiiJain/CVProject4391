@@ -119,27 +119,40 @@ for sequence in bad_sequences:
                 mp_results = detector.detect(mp_image)
 
                 if mp_results.hand_landmarks:
-                    hand_landmarks = mp_results.hand_landmarks[0] 
+                    # Grab detected hand and apply landmarks to it
+                    hand_landmarks = mp_results.hand_landmarks[0]
+                    extracted_points = []
                     
-                    # The Anchor Logic
+                    # 1. ESTABLISH THE FRAME'S ANCHOR (The Wrist)
                     wrist = hand_landmarks[0]
+                    # We need the wrist in global pixel coordinates first
                     wrist_global_x = x1 + int(wrist.x * crop_w)
                     wrist_global_y = y1 + int(wrist.y * crop_h)
                     
-                    if anchor_coord is None:
-                        anchor_coord = (wrist_global_x, wrist_global_y, wrist.z)
-                    
-                    extracted_points = []
-                    
+                    # Normalize the wrist to screen scale (0 to 1)
+                    wrist_norm_x = wrist_global_x / frame_w
+                    wrist_norm_y = wrist_global_y / frame_h
+                    wrist_z = wrist.z # MediaPipe Z is already relative to the wrist, but we lock it here
+
                     for landmark in hand_landmarks:
+                        # 2. GET CURRENT LANDMARK IN GLOBAL PIXELS
                         global_x = x1 + int(landmark.x * crop_w)
                         global_y = y1 + int(landmark.y * crop_h)
                         
-                        norm_x = (global_x - anchor_coord[0]) / frame_w
-                        norm_y = (global_y - anchor_coord[1]) / frame_h
-                        norm_z = landmark.z - anchor_coord[2]
+                        # 3. NORMALIZE TO SCREEN SCALE (0 to 1)
+                        raw_norm_x = global_x / frame_w
+                        raw_norm_y = global_y / frame_h
                         
-                        extracted_points.extend([norm_x, norm_y, norm_z])
+                        # 4. SUBTRACT THE ANCHOR (The Magic Fix)
+                        # This makes the wrist ALWAYS (0,0,0). 
+                        # If a fingertip is at X: 0.6 and the wrist is at X: 0.5, the saved value is 0.1
+                        final_x = raw_norm_x - wrist_norm_x
+                        final_y = raw_norm_y - wrist_norm_y
+                        final_z = landmark.z - wrist_z 
+                        
+                        extracted_points.extend([final_x, final_y, final_z])
+                        
+                        # Visual feedback (We use the global pixels so it still draws on the screen properly)
                         cv2.circle(frame, (global_x, global_y), 5, (0, 255, 0), -1)
                         
                     keypoints = np.array(extracted_points)
