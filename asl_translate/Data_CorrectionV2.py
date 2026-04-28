@@ -102,7 +102,7 @@ for sequence in bad_sequences:
         boxes = yolo_results[0].boxes
         
         # Default to the failsafe
-        keypoints = last_good_keypoints 
+        keypoints = last_good_keypoints.copy()
         
         if len(boxes) > 0:
             x1, y1, x2, y2 = map(int, boxes[0].xyxy[0])
