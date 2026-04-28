@@ -21,7 +21,7 @@ class ASLSequenceInterpreter(nn.Module):
         self.dropout = nn.Dropout(0.3) # Prevents the AI from just memorizing the data
         
         # num_classes = how many letters you are training (e.g., 3 for A, B, C)
-        self.fc2 = nn.Linear(32, num_classes) 
+        self.fc2 = nn.Linear(64, num_classes) 
 
     def forward(self, x):
         # x is your input data coming in. Shape: (batch_size, 16 frames, 63 points)

@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
+from frame_buffer import FrameBuffer
 from ultralytics import YOLO
 import numpy as np
 import torch
@@ -21,6 +22,7 @@ CONFIDENCE_THRESHOLD = 0.7
 
 # Only re-run YOLO every N frames. Reuses last box in between for speed.
 YOLO_SKIP_FRAMES = 3
+sequence_length = 16
 
 
 # --- THREADED CAMERA READER ---
