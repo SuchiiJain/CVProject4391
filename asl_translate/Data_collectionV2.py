@@ -75,7 +75,7 @@ for sequence in range(start_sequence, end_sequence): #New videos per user that g
         boxes = yolo_results[0].boxes
         
         # Default to last good known position
-        keypoints = np.zeros(last_good_keypoints) 
+        keypoints = last_good_keypoints.copy() 
         
         if len(boxes) > 0:
             x1, y1, x2, y2 = map(int, boxes[0].xyxy[0])
