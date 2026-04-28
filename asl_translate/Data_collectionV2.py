@@ -15,7 +15,7 @@ num_sequences = 45
 # How many frames per video (Don't Change this, due to how LSTM's Work)
 sequence_length = 16 
 
-print("Team Members: 1=Suchi_Jain, 2=Lauren_Anderson, 3=Bloo, 4=Nickolas_Ackley")
+print("Team Members: 1=Suchi_Jain, 2=Lauren_Anderson, 3=Victor Runyan, 4=Nickolas_Ackley")
 user_id = int(input("Enter your User Number (1-4): "))
 action = input("Enter the letter you are recording (e.g., A): ").upper()
 
