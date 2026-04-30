@@ -45,7 +45,7 @@ Because we are deploying on NVIDIA ARM64 architecture, standard desktop pip pack
 pip3 install -r requirements.txt
 ```
 
-**4. Download the MediaPipe landmarker Model
+**4. Download the MediaPipe landmarker Model**
 ```bash
 wget [https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task](https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task)
 ```
