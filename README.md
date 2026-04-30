@@ -52,19 +52,28 @@ wget [https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landm
 ```
 
 **5. Start the program**
+
 After having trained off of data, best_asl_model.pth will appear as a file
 ```bash
 python3 Live.py
 ```
 
-Verified Hardware Stack
-Be aware that upgrading these packages will break the Jetson GPU pipeline
+**Verified Hardware Stack**
+
+*Be aware that upgrading these packages will break the Jetson GPU pipeline*
 
 OS Architecture: Ubuntu 22.04 (JetPack 6.1 L4T)
+
 Python: 3.10
+
 PyTorch: 2.5.0a0 (NVIDIA natively compiled)
+
 TorchVision: 0.20.0 (Jetson AI Lab bypass)
+
 NumPy: 1.26.4 (STRICT LOCK: NumPy 2.x breaks ARM PyTorch)
+
 OpenCV: 4.9.0.80
+
 MediaPipe: 0.10.5
+
 Ultralytics (YOLO): 8.4.0
