@@ -11,9 +11,9 @@ from frame_buffer import FrameBuffer # Import the helper for series of frames
 
 # ---CONFIG---
 # Change this for every letter
-action = 'A' 
+action = 'Z' 
 # Videos of letter in folder (Don't Change this, for simplicities sake)
-num_sequences = 30 
+num_sequences = 45
 # How many frames per video (Don't Change this, due to how LSTM's Work)
 sequence_length = 16 
 
@@ -75,7 +75,7 @@ for sequence in range(start_sequence, end_sequence): #New videos per user that g
         boxes = yolo_results[0].boxes
         
         # Default to last good known position
-        keypoints = np.zeros(last_good_keypoints) 
+        keypoints = np.zeros_like(last_good_keypoints) 
         
         if len(boxes) > 0:
             x1, y1, x2, y2 = map(int, boxes[0].xyxy[0])
@@ -111,8 +111,8 @@ for sequence in range(start_sequence, end_sequence): #New videos per user that g
                         global_y = y1 + int(landmark.y * crop_h)
                         
                         # Normalize by screen resolution (works for any screen res size) (returns a float between 0 and 1) WITH NEW SUBTRACTION FROM ANCHOR
-                        norm_x = (global_x / frame_w[0]) / frame_w
-                        norm_y = (global_y / frame_h[1]) / frame_h
+                        norm_x = global_x / frame_w
+                        norm_y = global_y / frame_h
                         norm_z = landmark.z - anchor_coord[2]
 
                       
