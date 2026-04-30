@@ -1,4 +1,28 @@
-﻿absl-py==2.4.0
+﻿# ==========================================
+# ASL TRANSLATOR - JETSON ORIN DEPLOYMENT
+# ==========================================
+
+# --- THE NUMPY SAFEHOUSE ---
+# DO NOT UPGRADE TO NUMPY 2.X. It breaks PyTorch 2.5 on ARM architectures.
+numpy==1.26.4
+
+# --- NVIDIA GPU ML CORE ---
+# Pulls the JetPack 6.1 specific PyTorch wheel directly from NVIDIA
+https://developer.download.nvidia.com/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
+# Bypasses the 403 firewall to pull hardware-accelerated TorchVision
+--trusted-host pypi.jetson-ai-lab.io
+--extra-index-url https://pypi.jetson-ai-lab.io/jp6/cu126
+torchvision==0.20.0
+
+# --- COMPUTER VISION PIPELINE ---
+# Pinned to 4.9.x to maintain compatibility with NumPy 1.26.4
+opencv-python==4.9.0.80
+opencv-contrib-python==4.9.0.80
+mediapipe==0.10.5
+ultralytics==8.4.0
+
+# --- STANDARD DEPENDENCIES ---
+absl-py==2.4.0
 cffi==2.0.0
 contourpy==1.3.3
 cycler==0.12.1
@@ -6,9 +30,6 @@ flatbuffers==25.12.19
 fonttools==4.62.1
 kiwisolver==1.5.0
 matplotlib==3.10.8
-mediapipe==0.10.5
-numpy==2.4.4
-# This will override the pre-installed openCV on the nano -- opencv-contrib-python==4.13.0.92
 packaging==26.0
 pillow==12.2.0
 pycparser==3.0
@@ -16,4 +37,3 @@ pyparsing==3.3.2
 python-dateutil==2.9.0.post0
 six==1.17.0
 sounddevice==0.5.5
-ultralytics==8.4.0
