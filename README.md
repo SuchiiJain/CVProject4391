@@ -40,6 +40,7 @@ python3 -m pip install --upgrade pip
 Never commit the venv/ folder. It is listed in .gitignore and should stay there.
 
 **3. Install the hardware-Accelerated ML Pipeline**
+
 Because we are deploying on NVIDIA ARM64 architecture, standard desktop pip packages will crash. Run the custom requirements file, which automatically bypasses security proxies to pull the Jetson AI Lab wheels and strict-locks the NumPy versions to prevent system conflicts.
 ```bash
 pip3 install -r requirements.txt
