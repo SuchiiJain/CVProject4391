@@ -6,4 +6,4 @@ __pycache__/
 *.pt
 *.pth
 *.zip
-ASL_Dataset/
+ASL_Dataset/*.npy
