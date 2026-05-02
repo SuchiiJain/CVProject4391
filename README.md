@@ -48,7 +48,7 @@ pip3 install -r requirements.txt
 
 **4. Download the MediaPipe landmarker Model**
 ```bash
-wget [https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task](https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task)
+wget https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task
 ```
 
 **5. Start the program**
