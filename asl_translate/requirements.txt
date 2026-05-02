@@ -7,11 +7,11 @@
 numpy==1.26.4
 
 # --- NVIDIA GPU ML CORE ---
-# Pulls the JetPack 6.1 specific PyTorch wheel directly from NVIDIA
-https://developer.download.nvidia.com/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
-# Bypasses the 403 firewall to pull hardware-accelerated TorchVision
+# Pulls hardware-accelerated Torch and TorchVision directly from Jetson AI Lab
+# to prevent pip metadata conflicts.
 --trusted-host pypi.jetson-ai-lab.io
 --extra-index-url https://pypi.jetson-ai-lab.io/jp6/cu126
+torch==2.5.0
 torchvision==0.20.0
 
 # --- COMPUTER VISION PIPELINE ---
